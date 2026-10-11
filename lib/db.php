@@ -13,7 +13,7 @@ function db(): PDO
     }
 
     if (!extension_loaded('pdo_pgsql')) {
-        fail('La extension pdo_pgsql no esta habilitada en PHP. Activala en php.ini (XAMPP: extension=pdo_pgsql).', 500);
+        throw new RuntimeException('La extension pdo_pgsql no esta habilitada en PHP (php.ini: extension=pdo_pgsql).');
     }
 
     $host = env('DB_HOST', '127.0.0.1');
@@ -38,12 +38,13 @@ function db(): PDO
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES   => false,
             PDO::ATTR_STRINGIFY_FETCHES  => false,
+            PDO::ATTR_TIMEOUT            => 15,
         ]);
     } catch (PDOException $e) {
-        $msg = env('APP_DEBUG', '0') === '1'
-            ? 'No se pudo conectar a PostgreSQL: ' . $e->getMessage()
-            : 'No se pudo conectar a la base de datos. Revisa la configuracion en .env';
-        fail($msg, 500);
+        throw new RuntimeException(sprintf(
+            'No se pudo conectar a PostgreSQL (host=%s puerto=%s base=%s usuario=%s ssl=%s): %s',
+            $host, $port, $name, $user, $ssl, $e->getMessage()
+        ), 0, $e);
     }
 
     return $pdo;

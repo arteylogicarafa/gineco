@@ -44,6 +44,12 @@ function env_load(string $file): void
 function env(string $key, mixed $default = null): mixed
 {
     $val = getenv($key);
+    if (($val === false || $val === '') && isset($_ENV[$key])) {
+        $val = $_ENV[$key];
+    }
+    if (($val === false || $val === '') && isset($_SERVER[$key])) {
+        $val = $_SERVER[$key];
+    }
     if ($val === false || $val === '') {
         return $default;
     }
@@ -58,6 +64,25 @@ env_load(APP_ROOT . '/.env');
 ini_set('display_errors', env('APP_DEBUG', '0') === '1' ? '1' : '0');
 error_reporting(E_ALL);
 date_default_timezone_set(env('APP_TIMEZONE', 'America/Guayaquil'));
+
+// Ningun error se escapa: siempre hay respuesta JSON (nunca cuerpo vacio).
+set_exception_handler(static function (Throwable $e): void {
+    // no intentar escribir la sesion si el fallo viene de la propia BD
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        @session_abort();
+    }
+    if (!headers_sent()) {
+        header('Content-Type: application/json; charset=utf-8');
+        header('X-Content-Type-Options: nosniff');
+    }
+    http_response_code(500);
+    $mensaje = $e->getMessage();
+    if (env('APP_DEBUG', '0') === '1') {
+        $mensaje .= ' [' . $e->getFile() . ':' . $e->getLine() . ']';
+    }
+    echo json_encode(['ok' => false, 'error' => $mensaje], JSON_UNESCAPED_UNICODE);
+    exit(1);
+});
 
 /* ------------------------------------------------------------------
  * Respuestas JSON
@@ -132,6 +157,9 @@ function method(string ...$esperados): void
  * ------------------------------------------------------------------ */
 final class SesionEnBD implements SessionHandlerInterface
 {
+    /** Ultimo fallo de lectura/escritura (para diagnosticar en el endpoint). */
+    public static ?string $ultimoError = null;
+
     public function open(string $path, string $name): bool
     {
         return true;
@@ -146,8 +174,10 @@ final class SesionEnBD implements SessionHandlerInterface
     {
         try {
             $fila = db_row('SELECT datos FROM sesiones WHERE id = ? AND expira > now()', [$id]);
+            self::$ultimoError = null;
             return $fila ? (string) $fila['datos'] : '';
         } catch (Throwable $e) {
+            self::$ultimoError = $e->getMessage();
             return '';
         }
     }
@@ -160,8 +190,10 @@ final class SesionEnBD implements SessionHandlerInterface
                  ON CONFLICT (id) DO UPDATE SET datos = EXCLUDED.datos, expira = EXCLUDED.expira",
                 [$id, $datos]
             );
+            self::$ultimoError = null;
             return true;
         } catch (Throwable $e) {
+            self::$ultimoError = $e->getMessage();
             return false;
         }
     }
@@ -208,6 +240,10 @@ function session_boot(): void
     }
 
     session_start();
+
+    if (env('SESSION_DRIVER', 'db') === 'db' && SesionEnBD::$ultimoError) {
+        throw new RuntimeException('No se pudo usar la sesion en PostgreSQL: ' . SesionEnBD::$ultimoError);
+    }
 }
 
 function csrf_token(): string
