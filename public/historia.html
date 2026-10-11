@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Historia Clinica · Ginecologia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Historia Clinica" data-sub="Formulario ginecologico completo">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content" style="max-width:1180px">
+      <div class="page-head">
+        <div style="display:flex;gap:14px;align-items:flex-start">
+          <a class="btn btn-ghost btn-sm" href="pacientes.html" style="margin-top:5px">Volver</a>
+          <div>
+            <h1 id="nombrePaciente">Paciente</h1>
+            <div class="desc flex gap-8 wrap" id="datosPaciente"></div>
+          </div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-ghost" id="btnNueva">Nueva consulta</button>
+          <button class="btn btn-soft" id="btnImprimir">Imprimir / PDF</button>
+          <button class="btn btn-primary" id="btnGuardar">Guardar consulta</button>
+        </div>
+      </div>
+
+      <div id="aviso" class="hide" style="margin-bottom:16px"></div>
+
+      <!-- Cabecera de la consulta -->
+      <div class="section" id="secCabecera">
+        <div class="section-head">
+          <div class="section-num">N°</div>
+          <h3>Datos de la consulta</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="field">
+              <label>Fecha de consulta <span class="req">*</span></label>
+              <input class="input" type="date" name="fecha_consulta" id="fechaConsulta" required>
+            </div>
+            <div class="field">
+              <label>Hora</label>
+              <input class="input" type="time" name="hora">
+            </div>
+            <div class="field span-2">
+              <label>Numero de registro / Historia</label>
+              <input class="input" name="registro_historia" id="registroHistoria" readonly placeholder="Se crea con la primera consulta">
+            </div>
+            <div class="field span-4">
+              <label>Motivo de consulta / Sintomas principales</label>
+              <textarea class="textarea" name="motivo_consulta" placeholder="Ej: control ginecologico anual, dolor pelvico, planificacion familiar..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1. Datos personales -->
+      <div class="section" id="secPersonal">
+        <div class="section-head">
+          <div class="section-num">1</div>
+          <h3>Datos personales</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="field span-2">
+              <label>Nombre completo <span class="req">*</span></label>
+              <input class="input" name="nombre" required>
+            </div>
+            <div class="field">
+              <label>Edad</label>
+              <input class="input" type="number" name="edad" min="0" max="120" id="edadPaciente">
+            </div>
+            <div class="field">
+              <label>Sexo</label>
+              <select class="select" name="sexo">
+                <option>Femenino</option>
+                <option>Masculino</option>
+                <option>Otro</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Fecha de nacimiento</label>
+              <input class="input" type="date" name="fecha_nacimiento" id="fechaNacPaciente">
+            </div>
+            <div class="field">
+              <label>Cedula / ID</label>
+              <input class="input" name="cedula">
+            </div>
+            <div class="field">
+              <label>Procedencia</label>
+              <input class="input" name="procedencia">
+            </div>
+            <div class="field">
+              <label>Ocupacion</label>
+              <input class="input" name="ocupacion">
+            </div>
+
+            <div class="field">
+              <label>Estado civil</label>
+              <select class="select" name="estado_civil">
+                <option value="">Sin especificar</option>
+                <option>Soltera</option>
+                <option>Casada</option>
+                <option>Union libre</option>
+                <option>Divorciada</option>
+                <option>Viuda</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Telefono</label>
+              <input class="input" name="telefono">
+            </div>
+            <div class="field span-2">
+              <label>Correo electronico</label>
+              <input class="input" type="email" name="correo">
+            </div>
+
+            <div class="field span-2">
+              <label>Direccion</label>
+              <input class="input" name="direccion">
+            </div>
+            <div class="field span-2">
+              <label>Alergias conocidas</label>
+              <input class="input" name="alergias_conocidas" placeholder="Penicilina, yodo...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Antecedentes -->
+      <div class="section" id="secAntecedentes">
+        <div class="section-head">
+          <div class="section-num">2</div>
+          <h3>Antecedentes personales y patologicos</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="checks mb-14">
+            <label class="check"><input type="checkbox" name="hta"> HTA</label>
+            <label class="check"><input type="checkbox" name="tiroides"> Tiroides</label>
+            <label class="check"><input type="checkbox" name="asma"> Asma</label>
+            <label class="check"><input type="checkbox" name="insulina"> Usa insulina</label>
+            <label class="check"><input type="checkbox" name="alergia"> Alergias</label>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Diabetes mellitus</label>
+              <select class="select" name="dm">
+                <option>No</option>
+                <option>DM1</option>
+                <option>DM2</option>
+                <option>Pre-diabetes</option>
+                <option>Gestacional</option>
+              </select>
+            </div>
+            <div class="field span-3">
+              <label>Detalle de tiroides / alergias</label>
+              <input class="input" name="tiroides_detalle" id="detalleTiroides" placeholder="Hipotiroidismo, Penicilina...">
+            </div>
+
+            <div class="field">
+              <label>Fumador</label>
+              <select class="select" name="fumador"><option>No</option><option>Si</option><option>Exfumador</option></select>
+            </div>
+            <div class="field">
+              <label>Consumo de alcohol</label>
+              <select class="select" name="alcohol"><option>No</option><option>Ocasional</option><option>Frecuente</option></select>
+            </div>
+            <div class="field">
+              <label>ITS previa</label>
+              <select class="select" name="ITS"><option>No</option><option>Si</option><option>No referida</option></select>
+            </div>
+            <div class="field">
+              <label>&nbsp;</label>
+              <div class="field-hint">Marca las casillas de arriba si aplican</div>
+            </div>
+
+            <div class="field span-2">
+              <label>Antecedentes quirurgicos (año y complicaciones)</label>
+              <textarea class="textarea" name="quirurgicos" placeholder="Ej: Apendicectomia (2015) sin complicaciones"></textarea>
+            </div>
+            <div class="field span-2">
+              <label>Otros antecedentes</label>
+              <textarea class="textarea" name="otros" placeholder="Transfusiones, hospitalizaciones..."></textarea>
+            </div>
+
+            <div class="field span-2">
+              <label>Antecedentes familiares</label>
+              <textarea class="textarea" name="familiares" placeholder="Madre: HTA. Tia materna: cancer de mama..."></textarea>
+            </div>
+            <div class="field span-2">
+              <label>Antecedentes oncológicos</label>
+              <textarea class="textarea" name="oncologicos" placeholder="Cancer de mama, ovario, colono..."></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Gineco-Obstetricos -->
+      <div class="section collapsed" id="secGineco">
+        <div class="section-head">
+          <div class="section-num">3</div>
+          <h3>Antecedentes gineco-obstetricos</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="field">
+              <label>Menarquia (edad)</label>
+              <input class="input" type="number" name="menarquia" min="6" max="30" placeholder="12">
+            </div>
+            <div class="field">
+              <label>Menopausia</label>
+              <input class="input" name="menopausia" placeholder="No aplica / edad / fecha">
+            </div>
+            <div class="field span-2">
+              <label>TRH (terapia de reemplazo hormonal)</label>
+              <input class="input" name="trh" placeholder="No / detalle y duracion">
+            </div>
+
+            <div class="field">
+              <label>Ciclos</label>
+              <select class="select" name="ciclos">
+                <option>Regulares</option>
+                <option>Irregulares</option>
+                <option>Amenorrea</option>
+                <option>Menorragia</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Duracion del ciclo</label>
+              <input class="input" name="ciclo_duracion" placeholder="28 dias">
+            </div>
+            <div class="field">
+              <label>Sangrado</label>
+              <input class="input" name="sangrado" placeholder="5 dias, moderado">
+            </div>
+            <div class="field">
+              <label>Sindrome premenstrual</label>
+              <input class="input" name="premenstrual" placeholder="Leve / moderado / severo">
+            </div>
+
+            <div class="field">
+              <label>Lactancia</label>
+              <input class="input" name="lactancia" placeholder="No / actual / tiempo">
+            </div>
+            <div class="field">
+              <label>FUM (fecha ultima menstruacion)</label>
+              <input class="input" type="date" name="fuc">
+            </div>
+            <div class="field">
+              <label>MAC (metodo anticonceptivo)</label>
+              <input class="input" name="mac" placeholder="AOC, DIU, condon...">
+            </div>
+            <div class="field">
+              <label>Esterilizacion</label>
+              <input class="input" name="esterilizacion" placeholder="No / fecha del procedimiento">
+            </div>
+
+            <div class="field"><label>Gestas</label><input class="input" type="number" name="gestas" min="0" value="0"></div>
+            <div class="field"><label>Partos</label><input class="input" type="number" name="partos" min="0" value="0"></div>
+            <div class="field"><label>Cesareas</label><input class="input" type="number" name="cesareas" min="0" value="0"></div>
+            <div class="field"><label>Abortos</label><input class="input" type="number" name="abortos" min="0" value="0"></div>
+
+            <div class="field"><label>Legrados</label><input class="input" type="number" name="legrados" min="0" value="0"></div>
+            <div class="field"><label>Histerectomias</label><input class="input" type="number" name="histerectomias" min="0" value="0"></div>
+            <div class="field span-2">
+              <label>Complicaciones obstetricas</label>
+              <input class="input" name="complicaciones" placeholder="Preeclampsia, hemorragia...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. Examen fisico -->
+      <div class="section collapsed" id="secFisico">
+        <div class="section-head">
+          <div class="section-num">4</div>
+          <h3>Examen fisico y signos vitales</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="field">
+              <label>Presion arterial</label>
+              <div style="display:flex;gap:6px;align-items:center">
+                <input class="input" type="number" name="pa_sistolica" id="paSis" placeholder="110" style="width:50%">
+                <span class="text-muted">/</span>
+                <input class="input" type="number" name="pa_diastolica" id="paDia" placeholder="70" style="width:50%">
+              </div>
+            </div>
+            <div class="field">
+              <label>Frecuencia cardiaca</label>
+              <input class="input" type="number" name="fc" placeholder="78">
+            </div>
+            <div class="field">
+              <label>Temperatura (°C)</label>
+              <input class="input" type="number" step="0.1" name="temp" placeholder="36.6">
+            </div>
+            <div class="field">
+              <label>Saturacion O2 (%)</label>
+              <input class="input" type="number" name="saturacion" placeholder="98">
+            </div>
+
+            <div class="field">
+              <label>Peso (kg)</label>
+              <input class="input" type="number" step="0.01" name="peso" id="peso" placeholder="62.50">
+            </div>
+            <div class="field">
+              <label>Talla (cm)</label>
+              <input class="input" type="number" step="0.1" name="talla" id="talla" placeholder="162">
+            </div>
+            <div class="field">
+              <label>IMC (calculado)</label>
+              <input class="input" name="imc" id="imc" readonly placeholder="Automatico">
+            </div>
+            <div class="field">
+              <label>Clasificacion IMC</label>
+              <input class="input" id="imcClase" readonly placeholder="—">
+            </div>
+
+            <div class="field span-4">
+              <label>Sintomas principales</label>
+              <textarea class="textarea" name="sintomas" placeholder="Dolor pelvico, metrorragia, flujo..."></textarea>
+            </div>
+            <div class="field span-2">
+              <label>Aspecto general</label>
+              <input class="input" name="aspecto_general" placeholder="Buen estado general, hidratada...">
+            </div>
+            <div class="field span-2">
+              <label>Mamas</label>
+              <input class="input" name="mamas" placeholder="Simetricas, sin nodulos palpables">
+            </div>
+
+            <div class="field">
+              <label>Cuello - Tiroides</label>
+              <input class="input" name="cuello_tiroides" placeholder="No aumentado">
+            </div>
+            <div class="field">
+              <label>Cuello - Ganglios</label>
+              <input class="input" name="cuello_ganglios" placeholder="No aumentados">
+            </div>
+            <div class="field span-2">
+              <label>Abdomen</label>
+              <input class="input" name="abdomen" placeholder="Blando, depresible, sin defensa">
+            </div>
+
+            <div class="field span-4">
+              <label>Extremidades</label>
+              <input class="input" name="extremidades" placeholder="Sin edemas">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. Examen ginecologico -->
+      <div class="section collapsed" id="secGinecoExamen">
+        <div class="section-head">
+          <div class="section-num">5</div>
+          <h3>Examen ginecologico</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid cols-2">
+            <div class="field">
+              <label>Genitales externos</label>
+              <input class="input" name="genitales_externos" placeholder="Normales, sin lesiones">
+            </div>
+            <div class="field">
+              <label>Vagina</label>
+              <input class="input" name="vagina" placeholder="Flujo claro fisiologico">
+            </div>
+            <div class="field">
+              <label>Cervix</label>
+              <input class="input" name="cervix" placeholder="Nullipara, orificios cerrados">
+            </div>
+            <div class="field">
+              <label>Utero</label>
+              <input class="input" name="utero" placeholder="Antevertido, movil, normal tamano">
+            </div>
+            <div class="field">
+              <label>Anexos</label>
+              <input class="input" name="anexos" placeholder="Izquierdo normal, derecho: quiste 3 cm">
+            </div>
+            <div class="field">
+              <label>Fondo de saco</label>
+              <input class="input" name="fondo_saco" placeholder="Libre, sin nodulos">
+            </div>
+            <div class="field span-2">
+              <label>Citologia / Papanicolaou</label>
+              <input class="input" name="citologia" placeholder="Tomado, resultado pendiente">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. Paraclinicos -->
+      <div class="section collapsed" id="secParaclinicos">
+        <div class="section-head">
+          <div class="section-num">6</div>
+          <h3>Paraclinicos / examenes auxiliares</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="table-wrap">
+            <table class="table" id="tablaParaclinicos">
+              <thead>
+                <tr>
+                  <th style="width:26%">Examen</th>
+                  <th style="width:14%">Fecha</th>
+                  <th style="width:28%">Resultado</th>
+                  <th>Observaciones</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+          <button class="btn btn-soft mt-14" id="btnParaclinico" type="button">Agregar examen</button>
+        </div>
+      </div>
+
+      <!-- 7. Imagenes -->
+      <div class="section collapsed" id="secImagenes">
+        <div class="section-head">
+          <div class="section-num">7</div>
+          <h3>Imagenes / ecografias / ultrasonidos</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <strong>Arrastra aqui tus ecografias o haz clic para seleccionar</strong>
+            <span>Formatos JPG, PNG, WEBP o PDF · maximo 15 MB por archivo</span>
+            <input type="file" id="inputArchivos" multiple accept="image/jpeg,image/png,image/webp,application/pdf" class="hide">
+          </div>
+          <div class="img-grid" id="gridImagenes"></div>
+        </div>
+      </div>
+
+      <!-- 8. Diagnostico -->
+      <div class="section" id="secDiagnostico">
+        <div class="section-head">
+          <div class="section-num">8</div>
+          <h3>Diagnostico y tratamiento</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid">
+            <div class="field span-3">
+              <label>Diagnostico</label>
+              <textarea class="textarea" name="diagnostico" placeholder="Diagnostico principal y secundarios..."></textarea>
+            </div>
+            <div class="field">
+              <label>CIE-10 (opcional)</label>
+              <input class="input" name="cie10" list="codigosCIE" placeholder="N83.2">
+              <datalist id="codigosCIE">
+                <option value="N80">Endometriosis</option>
+                <option value="N83.2">Quiste ovariano</option>
+                <option value="N85.2">Hipermenorrea</option>
+                <option value="N86">Cervicitis</option>
+                <option value="N92">Menstruacion irregular</option>
+                <option value="N94.4">Dismenorrea</option>
+                <option value="N94.6">Dolor pelvico</option>
+                <option value="D25">Mioma uterino</option>
+                <option value="D25.9">Leiomioma uterino</option>
+                <option value="Z01.41">Examen ginecologico</option>
+                <option value="Z30.0">Consejeria anticonceptiva</option>
+                <option value="Z34.8">Supervision de embarazo normal</option>
+              </datalist>
+            </div>
+
+            <div class="field span-4">
+              <label>Tratamiento indicado</label>
+              <textarea class="textarea tall" name="tratamiento" placeholder="Medicacion, dosis, duracion, indicaciones..."></textarea>
+            </div>
+
+            <div class="field">
+              <label>Proxima cita</label>
+              <input class="input" type="date" name="proxima_cita">
+            </div>
+            <div class="field span-3">
+              <label>Notas adicionales</label>
+              <input class="input" name="notas" placeholder="Indicaciones para la paciente, seguimiento...">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. Historial -->
+      <div class="section" id="secHistorial">
+        <div class="section-head">
+          <div class="section-num">9</div>
+          <h3>Historial de consultas</h3>
+          <span class="toggle"></span>
+        </div>
+        <div class="section-body">
+          <div id="timeline" class="timeline"></div>
+        </div>
+      </div>
+
+      <div class="flex gap-10 wrap" style="justify-content:flex-end;margin-top:8px">
+        <button class="btn btn-ghost" id="btnNueva2">Nueva consulta</button>
+        <button class="btn btn-soft" id="btnImprimir2">Imprimir / PDF</button>
+        <button class="btn btn-primary btn-lg" id="btnGuardar2">Guardar consulta</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/historia.js"></script>
+</body>
+</html>

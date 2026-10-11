@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Pacientes · Historia Clinica Ginecologica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Pacientes" data-sub="Busqueda y registro de pacientes">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Pacientes</h1>
+          <div class="desc" id="contador">Cargando...</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn btn-primary" id="btnNuevo">Nuevo paciente</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="search-box" style="width:min(420px,100%)">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input id="busqueda" type="search" placeholder="Buscar por nombre, cedula, N° registro o telefono..." autocomplete="off">
+          </div>
+          <span class="hint">Haz clic en una fila para abrir su historia clinica</span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>N° Registro</th>
+                <th>Paciente</th>
+                <th>Edad</th>
+                <th>Telefono</th>
+                <th>Ultima consulta</th>
+                <th>Proxima cita</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpo"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="paginacion"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal paciente -->
+<div class="modal-backdrop" id="modalPaciente">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h3 id="tituloModal">Nuevo paciente</h3>
+      <button class="modal-close" data-cerrar>&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formPaciente">
+        <div class="form-grid">
+          <div class="field span-2">
+            <label>Nombre completo <span class="req">*</span></label>
+            <input class="input" name="nombre" required placeholder="Nombres y apellidos">
+          </div>
+          <div class="field">
+            <label>Cedula / ID</label>
+            <input class="input" name="cedula" placeholder="1712345678">
+          </div>
+          <div class="field">
+            <label>N° Registro</label>
+            <input class="input" name="registro_numero" placeholder="Auto">
+          </div>
+
+          <div class="field">
+            <label>Fecha de nacimiento</label>
+            <input class="input" name="fecha_nacimiento" type="date" id="fNac">
+          </div>
+          <div class="field">
+            <label>Edad</label>
+            <input class="input" name="edad" type="number" min="0" max="120" id="fEdad" placeholder="Se calcula sola">
+          </div>
+          <div class="field">
+            <label>Sexo</label>
+            <select class="select" name="sexo">
+              <option>Femenino</option>
+              <option>Masculino</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Telefono</label>
+            <input class="input" name="telefono" placeholder="(099) 000 0000">
+          </div>
+
+          <div class="field span-2">
+            <label>Correo electronico</label>
+            <input class="input" name="correo" type="email" placeholder="correo@ejemplo.com">
+          </div>
+          <div class="field span-2">
+            <label>Direccion</label>
+            <input class="input" name="direccion" placeholder="Ciudad, calle...">
+          </div>
+
+          <div class="field">
+            <label>Procedencia</label>
+            <input class="input" name="procedencia" placeholder="Ciudad / provincia">
+          </div>
+          <div class="field">
+            <label>Ocupacion</label>
+            <input class="input" name="ocupacion" placeholder="">
+          </div>
+          <div class="field">
+            <label>Estado civil</label>
+            <select class="select" name="estado_civil">
+              <option value="">Sin especificar</option>
+              <option>Soltera</option>
+              <option>Casada</option>
+              <option>Union libre</option>
+              <option>Divorciada</option>
+              <option>Viuda</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Alergias conocidas</label>
+            <input class="input" name="alergias_conocidas" placeholder="Penicilina, yodo...">
+          </div>
+
+          <div class="field span-4">
+            <label>Notas</label>
+            <textarea class="textarea" name="notas" placeholder="Observaciones generales (opcional)"></textarea>
+          </div>
+        </div>
+
+        <label class="check on mt-14" id="checkHistoria" style="display:none">
+          <input type="checkbox" name="crear_historia" checked>
+          Crear historia clinica al guardar
+        </label>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-cerrar>Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardar">Guardar paciente</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/pacientes.js"></script>
+</body>
+</html>

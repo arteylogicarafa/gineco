@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Citas · Historia Clinica Ginecologica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Citas" data-sub="Agenda y calendario de atencion">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Agenda de citas</h1>
+          <div class="desc">Organiza tu consulta por dia, semana o mes</div>
+        </div>
+        <div class="page-actions">
+          <div class="flex gap-6">
+            <button class="btn btn-ghost" data-vista="mes">Mes</button>
+            <button class="btn btn-ghost" data-vista="semana">Semana</button>
+          </div>
+          <button class="btn btn-primary" id="btnNuevaCita">Nueva cita</button>
+        </div>
+      </div>
+
+      <div class="grid grid-calendario">
+        <div class="card card-pad">
+          <div class="cal-head">
+            <div class="flex gap-8 center">
+              <button class="btn btn-ghost btn-sm" id="btnAnterior">&lsaquo;</button>
+              <button class="btn btn-ghost btn-sm" id="btnHoy">Hoy</button>
+              <button class="btn btn-ghost btn-sm" id="btnSiguiente">&rsaquo;</button>
+              <div class="cal-title" id="tituloCal"></div>
+            </div>
+            <div class="flex gap-8 center">
+              <span class="badge rosa" id="resumenMes"></span>
+            </div>
+          </div>
+          <div id="calendario"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3 id="tituloDia">Hoy</h3>
+              <div class="hint" id="subtituloDia"></div>
+            </div>
+            <button class="btn btn-soft btn-sm" id="btnCitaDia">+ Cita</button>
+          </div>
+          <div id="listaDia" class="list"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal cita -->
+<div class="modal-backdrop" id="modalCita">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="tituloModalCita">Nueva cita</h3>
+      <button class="modal-close" data-cerrar>&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formCita">
+        <div class="form-grid cols-2">
+          <div class="field">
+            <label>Fecha <span class="req">*</span></label>
+            <input class="input" type="date" name="fecha" required>
+          </div>
+          <div class="field">
+            <label>Hora <span class="req">*</span></label>
+            <input class="input" type="time" name="hora" required value="09:00">
+          </div>
+
+          <div class="field span-2">
+            <label>Paciente</label>
+            <select class="select" name="paciente_id" id="selPaciente">
+              <option value="">-- Paciente registrado --</option>
+            </select>
+          </div>
+          <div class="field span-2 hide" id="campoTxt">
+            <label>Nombre del paciente <span class="req">*</span></label>
+            <input class="input" name="paciente_txt" placeholder="Nombre completo (paciente no registrado)">
+          </div>
+
+          <div class="field span-2">
+            <label>Motivo de la cita</label>
+            <input class="input" name="motivo" placeholder="Control, resultado de examen, primera consulta...">
+          </div>
+
+          <div class="field">
+            <label>Estado</label>
+            <select class="select" name="estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="atendida">Atendida</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>&nbsp;</label>
+            <div class="field-hint">Cambia el estado desde la lista del dia</div>
+          </div>
+
+          <div class="field span-2">
+            <label>Notas</label>
+            <textarea class="textarea" name="notas" placeholder="Indicaciones previas..."></textarea>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" id="btnEliminarCita" style="margin-right:auto;display:none;color:var(--danger)">Eliminar</button>
+      <button class="btn btn-ghost" data-cerrar>Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarCita">Guardar cita</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/citas.js"></script>
+</body>
+</html>

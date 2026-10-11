@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Cuentas · Administracion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Cuentas de medicos" data-sub="Administracion de usuarios del sistema">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content">
+      <div class="page-head">
+        <div>
+          <h1>Cuentas de medicos</h1>
+          <div class="desc">Cada medico tiene su propio espacio, logo, colores y pacientes</div>
+        </div>
+        <div class="page-actions">
+          <a class="btn btn-ghost" href="dashboard.html">Ir al dashboard</a>
+          <button class="btn btn-primary" id="btnNuevoMedico">Nuevo medico</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h3>Medicos registrados</h3>
+          <span class="hint" id="contadorMedicos"></span>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Medico</th>
+                <th>Usuario</th>
+                <th>Especialidad</th>
+                <th>Pacientes</th>
+                <th>Citas</th>
+                <th>Estado</th>
+                <th>Ultimo acceso</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cuerpoMedicos"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card mt-20" id="cardAdmins">
+        <div class="card-head"><h3>Administradores</h3></div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead><tr><th>Nombre</th><th>Usuario</th><th>Correo</th><th>Ultimo acceso</th></tr></thead>
+            <tbody id="cuerpoAdmins"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Modal medico -->
+<div class="modal-backdrop" id="modalMedico">
+  <div class="modal wide">
+    <div class="modal-head">
+      <h3 id="tituloModalMedico">Nuevo medico</h3>
+      <button class="modal-close" data-cerrar>&#10005;</button>
+    </div>
+    <div class="modal-body">
+      <form id="formMedico">
+        <div class="form-grid cols-2">
+          <div class="field span-2">
+            <label>Nombre completo <span class="req">*</span></label>
+            <input class="input" name="nombre" required placeholder="Dra. ... / Dr. ...">
+          </div>
+          <div class="field">
+            <label>Usuario <span class="req">*</span></label>
+            <input class="input" name="usuario" required placeholder="nombre.apellido" id="fUsuario">
+          </div>
+          <div class="field">
+            <label>Contrasena <span class="req">*</span></label>
+            <input class="input" name="password" type="text" placeholder="Minimo 6 caracteres" id="fPassword">
+            <span class="field-hint">Se envia al medico; podra cambiarla desde su perfil</span>
+          </div>
+
+          <div class="field">
+            <label>Especialidad</label>
+            <input class="input" name="especialidad" value="Ginecologia y Obstetricia">
+          </div>
+          <div class="field">
+            <label>N° registro / colegiatura</label>
+            <input class="input" name="colegiatura" placeholder="N° 00.000 - CMP">
+          </div>
+
+          <div class="field">
+            <label>Correo</label>
+            <input class="input" name="email" type="email" placeholder="correo@clinica.com">
+          </div>
+          <div class="field">
+            <label>Telefono</label>
+            <input class="input" name="telefono" placeholder="(02) 000 0000">
+          </div>
+
+          <div class="field span-2">
+            <label>Direccion</label>
+            <input class="input" name="direccion" placeholder="Ciudad, calle y numero">
+          </div>
+
+          <div class="field">
+            <label>Color institucional</label>
+            <input class="input" type="color" name="color_primario" value="#C2185B" style="height:42px;padding:4px">
+          </div>
+          <div class="field">
+            <label>Monograma</label>
+            <input class="input" name="monograma" maxlength="4" placeholder="Auto">
+          </div>
+        </div>
+        <div id="avisoPassword" class="hide"></div>
+      </form>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-cerrar>Cancelar</button>
+      <button class="btn btn-primary" id="btnGuardarMedico">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/usuarios.js"></script>
+</body>
+</html>

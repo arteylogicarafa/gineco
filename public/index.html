@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Iniciar sesion · Historia Clinica Ginecologica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+
+<div class="login-wrap">
+  <section class="login-hero">
+    <div class="brand">
+      <div class="brand-logo">HG</div>
+      <span>Historia Clinica Ginecologica</span>
+    </div>
+
+    <div>
+      <h1>Tu consulta, organizada con elegancia.</h1>
+      <p class="mt-14">
+        Historia clinica ginecologica completa, agenda de citas, ecografias y reportes
+        para medicos y clinicas. Multi-medico, claro y rapido de administrar.
+      </p>
+      <div class="feats mt-20">
+        <div><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Historia clinica en 9 secciones estructuradas</div>
+        <div><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Carga de ecografias, ultrasonidos y PDF</div>
+        <div><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Cada medico con su logo y colores institucionales</div>
+        <div><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Exportacion de la historia a PDF</div>
+      </div>
+    </div>
+
+    <div class="foot">Sistema clinico · Acceso personalizado por medico</div>
+  </section>
+
+  <section class="login-side">
+    <div class="login-card">
+      <h2>Bienvenido</h2>
+      <p class="sub">Ingresa a tu espacio de consulta</p>
+
+      <form id="loginForm" autocomplete="on">
+        <div class="field">
+          <label for="usuario">Usuario</label>
+          <input class="input" id="usuario" name="usuario" type="text" autocomplete="username" placeholder="tu.usuario" required autofocus>
+        </div>
+        <div class="field">
+          <label for="password">Contrasena</label>
+          <input class="input" id="password" name="password" type="password" autocomplete="current-password" placeholder="••••••••" required>
+        </div>
+
+        <div id="errorBox" class="hide"></div>
+
+        <button class="btn btn-primary btn-lg btn-block mt-14" type="submit" id="btnEntrar">
+          Iniciar sesion
+        </button>
+      </form>
+
+      <div class="login-note">
+        <strong>Cuentas de demostracion</strong>
+        <div class="row"><span>Superadmin</span><span><code>admin</code> · <code>Admin123!</code></span></div>
+        <div class="row"><span>Medica</span><span><code>doctora</code> · <code>Doctor123!</code></span></div>
+        <div class="row"><span>Medico</span><span><code>doctor</code> · <code>Doctor123!</code></span></div>
+        <div class="text-muted mt-8">Elimina estos usuarios en produccion.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/login.js"></script>
+</body>
+</html>

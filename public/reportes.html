@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Reportes · Historia Clinica Ginecologica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Reportes" data-sub="Listas, rangos de fechas e indicadores">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content">
+      <div class="page-head no-print">
+        <div>
+          <h1>Reportes</h1>
+          <div class="desc">Listado de pacientes, citas por rango de fechas e indicadores</div>
+        </div>
+        <div class="page-actions">
+          <div class="flex gap-6">
+            <button class="btn btn-ghost" data-tab="pacientes">Pacientes</button>
+            <button class="btn btn-ghost" data-tab="citas">Citas</button>
+            <button class="btn btn-ghost" data-tab="consultas">Consultas</button>
+            <button class="btn btn-ghost" data-tab="resumen">Resumen</button>
+          </div>
+          <button class="btn btn-soft" id="btnImprimir">Imprimir</button>
+        </div>
+      </div>
+
+      <div class="card no-print" id="filtros">
+        <div class="card-pad">
+          <div class="form-grid cols-3" style="gap:14px">
+            <div class="field">
+              <label>Desde</label>
+              <input class="input" type="date" id="desde">
+            </div>
+            <div class="field">
+              <label>Hasta</label>
+              <input class="input" type="date" id="hasta">
+            </div>
+            <div class="field" style="justify-content:flex-end">
+              <button class="btn btn-primary btn-block" id="btnAplicar">Aplicar rango</button>
+            </div>
+          </div>
+          <div class="flex gap-8 wrap mt-14">
+            <button class="btn btn-ghost btn-sm" data-rango="mes">Este mes</button>
+            <button class="btn btn-ghost btn-sm" data-rango="7">Ultimos 7 dias</button>
+            <button class="btn btn-ghost btn-sm" data-rango="30">Ultimos 30 dias</button>
+            <button class="btn btn-ghost btn-sm" data-rango="anio">Este ano</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-14">
+        <div class="card-head">
+          <div>
+            <h3 id="tituloReporte">Pacientes</h3>
+            <div class="hint" id="hintReporte"></div>
+          </div>
+          <span class="badge rosa" id="badgeTotal"></span>
+        </div>
+        <div class="table-wrap" id="cuerpoReporte"></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/reportes.js"></script>
+</body>
+</html>

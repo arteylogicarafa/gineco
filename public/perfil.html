@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Mi perfil · Historia Clinica Ginecologica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Mi perfil" data-sub="Datos institucionales, logo y colores">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content" style="max-width:980px">
+      <div class="page-head">
+        <div>
+          <h1>Mi perfil</h1>
+          <div class="desc">Estos datos encabezan tus historias clinicas y reportes</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h3>Datos institucionales</h3></div>
+        <div class="card-pad">
+            <div class="grid grid-perfil" style="gap:26px">
+            <div>
+              <div class="brand-logo" id="previewLogo" style="width:150px;height:150px;border-radius:18px;font-size:38px">HG</div>
+              <input type="file" id="inputLogo" accept="image/png,image/jpeg,image/webp" class="hide">
+              <button class="btn btn-ghost btn-sm btn-block mt-14" id="btnLogo">Subir logo</button>
+              <button class="btn btn-ghost btn-sm btn-block mt-8" id="btnQuitarLogo" style="color:var(--danger)">Quitar logo</button>
+              <div class="field-hint mt-8" style="text-align:center">PNG o JPG · max 3 MB</div>
+            </div>
+
+            <div class="form-grid cols-2">
+              <div class="field span-2">
+                <label>Nombre profesional <span class="req">*</span></label>
+                <input class="input" id="fNombre">
+              </div>
+              <div class="field">
+                <label>Especialidad</label>
+                <input class="input" id="fEspecialidad">
+              </div>
+              <div class="field">
+                <label>N° de registro / colegiatura</label>
+                <input class="input" id="fColegiatura">
+              </div>
+              <div class="field span-2">
+                <label>Direccion de la consulta</label>
+                <input class="input" id="fDireccion">
+              </div>
+              <div class="field">
+                <label>Telefono</label>
+                <input class="input" id="fTelefono">
+              </div>
+              <div class="field">
+                <label>Correo</label>
+                <input class="input" type="email" id="fCorreo">
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="form-grid cols-3">
+            <div class="field">
+              <label>Color institucional</label>
+              <input class="input" type="color" id="fColor" value="#C2185B" style="height:42px;padding:4px">
+            </div>
+            <div class="field">
+              <label>Color secundario</label>
+              <input class="input" type="color" id="fColor2" value="#F06292" style="height:42px;padding:4px">
+            </div>
+            <div class="field">
+              <label>Monograma (2-4 letras)</label>
+              <input class="input" id="fMonograma" maxlength="4" placeholder="ML">
+            </div>
+            <div class="field span-3">
+              <label>Paletas sugeridas</label>
+              <div class="flex gap-8 wrap" id="paletas"></div>
+            </div>
+          </div>
+
+          <div class="flex gap-10 mt-20" style="justify-content:flex-end">
+            <button class="btn btn-primary btn-lg" id="btnGuardarPerfil">Guardar cambios</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-20">
+        <div class="card-head"><h3>Seguridad</h3></div>
+        <div class="card-pad">
+          <div class="form-grid cols-3">
+            <div class="field">
+              <label>Contrasena actual</label>
+              <input class="input" type="password" id="pActual" autocomplete="current-password">
+            </div>
+            <div class="field">
+              <label>Nueva contrasena</label>
+              <input class="input" type="password" id="pNueva" autocomplete="new-password">
+            </div>
+            <div class="field">
+              <label>Repetir contrasena</label>
+              <input class="input" type="password" id="pRepetir" autocomplete="new-password">
+            </div>
+          </div>
+          <div class="flex mt-14" style="justify-content:flex-end">
+            <button class="btn btn-ghost" id="btnPassword">Cambiar contrasena</button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/perfil.js"></script>
+</body>
+</html>

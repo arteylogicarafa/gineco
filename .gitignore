@@ -1,0 +1,13 @@
+.env
+.DS_Store
+Thumbs.db
+*.log
+
+public/uploads/logos/*
+public/uploads/imagenes/*
+!public/uploads/logos/.gitkeep
+!public/uploads/imagenes/.gitkeep
+
+vendor/
+node_modules/
+.vercel/

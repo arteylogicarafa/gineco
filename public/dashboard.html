@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#C2185B">
+  <title>Dashboard · Historia Clinica Ginecologica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-title="Dashboard" data-sub="Resumen general de tu consulta">
+
+<div class="app">
+  <aside id="sidebar" class="sidebar"></aside>
+  <div id="scrim" class="scrim"></div>
+
+  <div class="main">
+    <header id="topbar" class="topbar"></header>
+
+    <main class="content">
+      <div id="kpis" class="grid grid-4">
+        <div class="kpi"><div class="loading" style="padding:0">Cargando...</div></div>
+      </div>
+
+      <div class="grid grid-split mt-20">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h3>Citas de hoy</h3>
+              <div class="hint" id="fechaHoy"></div>
+            </div>
+            <a class="btn btn-soft btn-sm" href="citas.html">Ver agenda</a>
+          </div>
+          <div id="citasHoy" class="list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Proximas citas</h3>
+            <a class="btn btn-soft btn-sm" href="citas.html">Agendar</a>
+          </div>
+          <div id="proximas" class="list"></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mt-20" style="align-items:start">
+        <div class="card">
+          <div class="card-head">
+            <h3>Ultimas consultas registradas</h3>
+            <a class="btn btn-soft btn-sm" href="pacientes.html">Pacientes</a>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr><th>Paciente</th><th>Fecha</th><th>Diagnostico</th></tr>
+              </thead>
+              <tbody id="ultimasConsultas"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card card-pad">
+          <h3 style="font-size:15px;margin-bottom:14px">Accesos rapidos</h3>
+          <div class="grid grid-2" style="gap:12px">
+            <a class="btn btn-soft btn-lg" href="pacientes.html?nueva=1" style="height:74px;flex-direction:column;gap:4px">
+              <span>Nueva historia</span>
+              <span class="text-sm" style="font-weight:500;opacity:.8">Registrar paciente</span>
+            </a>
+            <a class="btn btn-ghost btn-lg" href="pacientes.html" style="height:74px;flex-direction:column;gap:4px">
+              <span>Buscar paciente</span>
+              <span class="text-sm" style="font-weight:500;opacity:.8">Nombre o cedula</span>
+            </a>
+            <a class="btn btn-ghost btn-lg" href="citas.html?nueva=1" style="height:74px;flex-direction:column;gap:4px">
+              <span>Nueva cita</span>
+              <span class="text-sm" style="font-weight:500;opacity:.8">Agendar paciente</span>
+            </a>
+            <a class="btn btn-ghost btn-lg" href="reportes.html" style="height:74px;flex-direction:column;gap:4px">
+              <span>Reportes</span>
+              <span class="text-sm" style="font-weight:500;opacity:.8">Listas y rangos</span>
+            </a>
+          </div>
+
+          <div class="divider"></div>
+          <div class="dl" id="indicadores"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="assets/js/app.js"></script>
+<script src="assets/js/dashboard.js"></script>
+</body>
+</html>

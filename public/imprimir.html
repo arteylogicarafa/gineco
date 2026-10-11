@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Historia Clinica · Impresion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/app.css">
+  <style>
+    body { background: #EDEEF1; }
+    .barra {
+      position: sticky; top: 0; z-index: 10;
+      background: #fff; border-bottom: 1px solid var(--border);
+      padding: 12px 22px; display: flex; gap: 10px; align-items: center;
+      justify-content: space-between;
+    }
+    .hoja {
+      max-width: 900px; margin: 26px auto; background: #fff;
+      box-shadow: var(--shadow); border-radius: 6px; padding: 44px 48px;
+      color: #1c1e22;
+    }
+    .doc-head {
+      display: flex; gap: 22px; align-items: center;
+      border-bottom: 3px solid var(--primary); padding-bottom: 18px; margin-bottom: 6px;
+    }
+    .doc-logo {
+      width: 92px; height: 92px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff; display: grid; place-items: center;
+      font-size: 30px; font-weight: 800; overflow: hidden; flex: 0 0 auto;
+    }
+    .doc-logo img { width: 100%; height: 100%; object-fit: cover; }
+    .doc-head h1 { font-size: 22px; color: var(--primary-dark); }
+    .doc-head .esp { font-size: 14px; color: var(--primary); font-weight: 600; margin-top: 2px; }
+    .doc-head .dato { font-size: 12.5px; color: #565b63; margin-top: 3px; }
+    .doc-meta {
+      display: flex; flex-wrap: wrap; gap: 6px 26px;
+      font-size: 12.5px; padding: 12px 0 16px; border-bottom: 1px solid #E4E6EA;
+      margin-bottom: 20px;
+    }
+    .doc-meta b { color: var(--primary-dark); }
+
+    .doc-sec { margin-bottom: 20px; }
+    .doc-sec h2 {
+      font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+      color: #fff; background: var(--primary);
+      padding: 7px 12px; border-radius: 7px; margin-bottom: 12px;
+      display: flex; gap: 8px; align-items: center;
+    }
+    .doc-sec h2 span {
+      background: rgba(255,255,255,.25); width: 20px; height: 20px;
+      border-radius: 5px; display: grid; place-items: center; font-size: 11.5px;
+    }
+    .dl2 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px 22px; }
+    .dl2.wide { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .dl2 .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: #8a8f98; font-weight: 700; }
+    .dl2 .v { font-size: 13.5px; font-weight: 500; min-height: 18px; }
+    .dl2 .full { grid-column: 1 / -1; }
+    .parrafo { font-size: 13.5px; line-height: 1.6; white-space: pre-wrap; }
+
+    table.doc-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .doc-table th {
+      background: var(--primary-soft); color: var(--primary-dark);
+      text-align: left; padding: 7px 10px; border: 1px solid #E4E6EA;
+      font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+    }
+    .doc-table td { padding: 7px 10px; border: 1px solid #E4E6EA; vertical-align: top; }
+
+    .imgs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .imgs figure { margin: 0; border: 1px solid #E4E6EA; border-radius: 8px; overflow: hidden; break-inside: avoid; }
+    .imgs img { width: 100%; height: 150px; object-fit: contain; background: #fafafa; display: block; }
+    .imgs .pdf { height: 150px; display: grid; place-items: center; color: var(--danger); font-weight: 700; font-size: 13px; background: #fff; }
+    .imgs figcaption { font-size: 11px; padding: 7px 9px; color: #565b63; line-height: 1.45; }
+
+    .firma { display: flex; justify-content: space-between; gap: 40px; margin-top: 44px; }
+    .firma div { flex: 1; text-align: center; border-top: 1.5px solid #2b2f36; padding-top: 7px; font-size: 12.5px; }
+
+    @media print {
+      @page { size: A4; margin: 12mm; }
+      body { background: #fff; }
+      .barra, .sidebar, .topbar { display: none !important; }
+      .hoja { box-shadow: none; margin: 0; padding: 0; max-width: none; border-radius: 0; }
+      .doc-sec { break-inside: avoid; }
+    }
+    @media (max-width: 760px) {
+      .hoja { padding: 22px; margin: 12px; }
+      .dl2 { grid-template-columns: 1fr 1fr; }
+      .imgs { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="barra">
+    <a class="btn btn-ghost btn-sm" id="btnVolver">Volver a la historia</a>
+    <div class="flex gap-8">
+      <button class="btn btn-ghost btn-sm" id="btnCerrar">Cerrar pestana</button>
+      <button class="btn btn-primary" id="btnImprimir">Guardar como PDF</button>
+    </div>
+  </div>
+
+  <div class="hoja" id="hoja">
+    <div class="loading"><div class="spinner"></div>Generando documento...</div>
+  </div>
+
+  <script src="assets/js/app.js"></script>
+  <script src="assets/js/imprimir.js"></script>
+</body>
+</html>
