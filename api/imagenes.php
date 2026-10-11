@@ -27,19 +27,29 @@ $EXTENSIONES = ['jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/p
 /* ------------------------- servir binario ------------------------- */
 if ($method === 'GET' && !empty($_GET['id'])) {
     $id = (int) $_GET['id'];
-    $img = db_row('SELECT * FROM imagenes_ecografias WHERE id = ? AND medico_id = ?', [$id, $mid]);
+    $img = db_row(
+        'SELECT id, mime, archivo, titulo, tipo, fecha,
+                (contenido IS NOT NULL) AS en_bd,
+                encode(contenido, \'base64\') AS contenido_b64
+           FROM imagenes_ecografias WHERE id = ? AND medico_id = ?',
+        [$id, $mid]
+    );
     if (!$img) {
         fail('Imagen no encontrada', 404);
     }
 
-    if ($img['contenido'] !== null) {
+    if ($img['en_bd']) {
+        $binario = base64_decode((string) $img['contenido_b64']);
+        if ($binario === false) {
+            fail('El archivo esta corrupto', 500);
+        }
         $mime = $img['mime'] ?: 'image/jpeg';
         $ext = array_search($mime, $EXTENSIONES, true) ?: 'jpg';
         header('Content-Type: ' . $mime);
-        header('Content-Disposition: inline; filename="' . rawurlencode($img['titulo'] ?: ('imagen_' . $id)) . '.' . $ext . '"');
-        header('Content-Length: ' . strlen($img['contenido']));
+        header('Content-Disposition: inline; filename="' . rawurlencode(($img['titulo'] ?: 'imagen') . '_' . $id) . '.' . $ext . '"');
+        header('Content-Length: ' . strlen($binario));
         header('Cache-Control: private, max-age=3600');
-        echo $img['contenido'];
+        echo $binario;
         exit;
     }
 
@@ -131,10 +141,12 @@ if ($method === 'POST') {
     $contenido = null;
 
     if ($modo === 'db') {
-        $contenido = file_get_contents($file['tmp_name']);
-        if ($contenido === false) {
+        $binario = file_get_contents($file['tmp_name']);
+        if ($binario === false) {
             fail('No se pudo leer el archivo subido');
         }
+        // bytea exige notacion hexadecimal: \x + hex del contenido
+        $contenido = '\x' . bin2hex($binario);
     } else {
         $destinoRel = 'uploads/imagenes/' . date('Ymd_His') . '_' . bin2hex(random_bytes(5)) . '.' . $ext;
         $destino = APP_ROOT . '/public/' . $destinoRel;

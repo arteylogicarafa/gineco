@@ -25,6 +25,13 @@ function db(): PDO
 
     $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=%s', $host, $port, $name, $ssl);
 
+    // Neon: los endpoints antiguos de libpq no envian SNI, asi que hay que
+    // indicar el id del endpoint (primera parte del dominio) como parametro.
+    $endpoint = preg_replace('/-pooler$/i', '', explode('.', $host)[0]);
+    if (is_string($endpoint) && str_starts_with($endpoint, 'ep-')) {
+        $dsn .= ';options=endpoint=' . $endpoint;
+    }
+
     try {
         $pdo = new PDO($dsn, $user, $pass, [
             PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,

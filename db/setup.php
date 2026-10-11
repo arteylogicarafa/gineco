@@ -142,6 +142,16 @@ $med2 = asegurar_medico($doc2, [
 ]);
 paso('medico 2: doctor / Doctor123!');
 
+// Produccion: solo las cuentas de acceso, sin pacientes de demostracion.
+if (in_array('--solo-usuarios', $argv, true)) {
+    echo "\nListo. Cuentas creadas (sin datos de demostracion):\n";
+    echo "  Superadmin ..... admin / Admin123!\n";
+    echo "  Medico 1 ....... doctora / Doctor123!\n";
+    echo "  Medico 2 ....... doctor / Doctor123!\n";
+    echo "Cambia las contrasenas en cuanto inicies sesion.\n";
+    exit(0);
+}
+
 /* --- pacientes --- */
 $pacientesDemo = [
     [$med1, 'María Elena Suárez',   '1712345678', 34, '1992-04-18', 'Quito',      '(099) 456 7890', 'maria.suarez@mail.com'],
