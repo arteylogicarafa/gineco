@@ -23,31 +23,42 @@ function db(): PDO
     $pass = (string) env('DB_PASSWORD', '');
     $ssl  = env('DB_SSLMODE', 'disable');
 
-    $dsn = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=%s', $host, $port, $name, $ssl);
+    $dsnBase = sprintf('pgsql:host=%s;port=%s;dbname=%s;sslmode=%s', $host, $port, $name, $ssl);
 
-    // Neon: los endpoints antiguos de libpq no envian SNI, asi que hay que
-    // indicar el id del endpoint (primera parte del dominio) como parametro.
+    // Neon: los clientes con libpq antiguo no envian SNI y exigen el id del
+    // endpoint como parametro. Los modernos (Vercel) si lo envian, y mandar el
+    // parametro ademas provoca "Inconsistent project name". Se intenta primero
+    // sin el parametro y solo se reintenta si el error menciona SNI.
     $endpoint = preg_replace('/-pooler$/i', '', explode('.', $host)[0]);
-    if (is_string($endpoint) && str_starts_with($endpoint, 'ep-')) {
-        $dsn .= ';options=endpoint=' . $endpoint;
+    $esNeon = is_string($endpoint) && str_starts_with($endpoint, 'ep-');
+
+    $intentos = [$dsnBase];
+    if ($esNeon) {
+        $intentos[] = $dsnBase . ';options=endpoint=' . $endpoint;
     }
 
-    try {
-        $pdo = new PDO($dsn, $user, $pass, [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-            PDO::ATTR_STRINGIFY_FETCHES  => false,
-            PDO::ATTR_TIMEOUT            => 15,
-        ]);
-    } catch (PDOException $e) {
-        throw new RuntimeException(sprintf(
-            'No se pudo conectar a PostgreSQL (host=%s puerto=%s base=%s usuario=%s ssl=%s): %s',
-            $host, $port, $name, $user, $ssl, $e->getMessage()
-        ), 0, $e);
+    $ultimoError = null;
+    foreach ($intentos as $dsn) {
+        try {
+            return new PDO($dsn, $user, $pass, [
+                PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES   => false,
+                PDO::ATTR_STRINGIFY_FETCHES  => false,
+                PDO::ATTR_TIMEOUT            => 15,
+            ]);
+        } catch (PDOException $e) {
+            $ultimoError = $e;
+            if (!$esNeon || stripos($e->getMessage(), 'SNI') === false) {
+                break;
+            }
+        }
     }
 
-    return $pdo;
+    throw new RuntimeException(sprintf(
+        'No se pudo conectar a PostgreSQL (host=%s puerto=%s base=%s usuario=%s ssl=%s): %s',
+        $host, $port, $name, $user, $ssl, $ultimoError ? $ultimoError->getMessage() : 'error desconocido'
+    ), 0, $ultimoError);
 }
 
 /**
