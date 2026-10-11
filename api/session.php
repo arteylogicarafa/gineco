@@ -1,6 +1,6 @@
 <?php
 /** GET /api/session - usuario actual + token csrf */
-require __DIR__ . '/_lib/init.php';
+require __DIR__ . '/../lib/init.php';
 
 method('GET', 'OPTIONS');
 

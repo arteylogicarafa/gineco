@@ -1,19 +1,30 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
   "outputDirectory": "public",
-  "cleanUrls": true,
-  "trailingSlash": false,
+  "functions": {
+    "api/login.php": { "runtime": "vercel-php@0.7.4" },
+    "api/logout.php": { "runtime": "vercel-php@0.7.4" },
+    "api/session.php": { "runtime": "vercel-php@0.7.4" },
+    "api/dashboard.php": { "runtime": "vercel-php@0.7.4" },
+    "api/pacientes.php": { "runtime": "vercel-php@0.7.4" },
+    "api/historia.php": { "runtime": "vercel-php@0.7.4" },
+    "api/imagenes.php": { "runtime": "vercel-php@0.7.4" },
+    "api/citas.php": { "runtime": "vercel-php@0.7.4" },
+    "api/reportes.php": { "runtime": "vercel-php@0.7.4" },
+    "api/medicos.php": { "runtime": "vercel-php@0.7.4" }
+  },
   "headers": [
-    {
-      "source": "/uploads/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
-      ]
-    },
     {
       "source": "/assets/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=3600" }
+      ]
+    },
+    {
+      "source": "/uploads/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
     }
   ]

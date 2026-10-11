@@ -9,7 +9,7 @@
  * DELETE ?id=N         eliminar imagen (archivo incluido)
  */
 
-require __DIR__ . '/_lib/init.php';
+require __DIR__ . '/../lib/init.php';
 
 $medico = require_medico();
 $mid = (int) $medico['id'];

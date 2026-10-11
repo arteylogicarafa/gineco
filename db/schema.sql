@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS medicos (
   direccion         VARCHAR(255),
   telefono          VARCHAR(40),
   correo            VARCHAR(160),
-  logo              VARCHAR(255),
+  logo              TEXT,        -- ruta relativa o data-URL (UPLOAD_MODE=db)
   color_primario    VARCHAR(20)  NOT NULL DEFAULT '#C2185B',
   color_secundario  VARCHAR(20)  NOT NULL DEFAULT '#F06292',
   monograma         VARCHAR(6),
@@ -244,6 +244,17 @@ CREATE TABLE IF NOT EXISTS citas (
 );
 CREATE INDEX IF NOT EXISTS idx_citas_medico_fecha ON citas(medico_id, fecha);
 CREATE INDEX IF NOT EXISTS idx_citas_paciente     ON citas(paciente_id);
+
+-- ---------------------------------------------------------------
+-- Sesiones (durable en entornos serverless como Vercel)
+-- ---------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS sesiones (
+  id       VARCHAR(128) PRIMARY KEY,
+  datos    TEXT        NOT NULL,
+  expira   TIMESTAMPTZ NOT NULL DEFAULT now() + interval '24 hours',
+  creada   TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_sesiones_expira ON sesiones(expira);
 
 -- ---------------------------------------------------------------
 -- Auditoria simple de cambios (opcional, ligera)

@@ -19,11 +19,12 @@ Diseño clinico elegante en rosa / blanco / gris, sin frameworks pesados.
 
 ```
 gineco/
-├── api/                    # Endpoints PHP (JSON)
-│   ├── _lib/               # Nucleo: bootstrap, db, auth
+├── api/                    # Endpoints PHP (JSON) = funciones de Vercel
 │   ├── login.php  logout.php  session.php
 │   ├── dashboard.php  pacientes.php  historia.php
 │   ├── imagenes.php  citas.php  reportes.php  medicos.php
+│   └── php.ini             # Config PHP solo para el despliegue
+├── lib/                    # Nucleo compartido: bootstrap, db, auth
 ├── public/                 # Frontend (se sirve como raiz estatica)
 │   ├── index.html          # Login
 │   ├── dashboard.html  pacientes.html  historia.html
@@ -33,7 +34,9 @@ gineco/
 │   └── uploads/logos|imagenes
 ├── db/
 │   ├── schema.sql          # Esquema completo
-│   └── setup.php           # Aplica esquema + datos demo
+│   ├── setup.php           # Esquema + datos de demostracion
+│   └── migrar.php          # Aplica solo el esquema (Neon/produccion)
+├── vercel.json             # Config de despliegue (runtime PHP + frontend)
 ├── .env.example            # Plantilla de configuracion
 └── README.md
 ```
@@ -147,49 +150,79 @@ Formatos admitidos: JPG, PNG, WEBP y PDF, hasta 15 MB por archivo.
 
 ## 6. Despliegue
 
-### GitHub
+### 6.1 GitHub
+
+Repositorio: **https://github.com/arteylogicarafa/gineco** (publico).
 
 ```bash
-git init
 git add .
-git commit -m "Historia clinica ginecologica - v1"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/gineco.git
-git push -u origin main
+git commit -m "cambios"
+git push origin main
 ```
 
-El archivo `.env` esta en `.gitignore` (nunca se sube). Sube `.env.example`.
+El archivo `.env` esta en `.gitignore`/`.vercelignore` (nunca se sube).
 
-### Hosting PHP (produccion recomendada)
+### 6.2 Neon (base de datos)
 
-Cualquier hosting con PHP 8.1+ y PostgreSQL sirve el sistema tal cual:
+1. Crea el proyecto en [neon.tech](https://neon.tech) y copia el **string de conexion**
+   (`postgres://usuario:password@ep-xxx.aws.neon.tech/dbname?sslmode=require`).
+2. Aplica el esquema con el script incluido (desde tu equipo):
 
-1. Sube todos los archivos (Ruta de la app = carpeta del proyecto).
-2. Crea `.env` con los datos de Neon (`DB_SSLMODE=require`).
-3. Aplica `db/schema.sql` a Neon (panel de Neon o `psql`).
-4. Asegura que `public/uploads/` sea escribible (755/775).
-5. Punto de entrada publico: `/public/index.html`.
+   ```bash
+   # .env apuntando a Neon (DB_SSLMODE=require)
+   php db/migrar.php
+   ```
 
-Proveedores con PHP + PostgreSQL: **Railway**, **Render**, **A2 Hosting**, **cPanel**,
-**InfinityFree**, o un VPS con Nginx/Apache.
+   O pega el contenido de `db/schema.sql` en el SQL Editor de Neon.
 
-### Vercel
+### 6.3 Vercel (frontend + API)
 
-Vercel sirve hoy proyectos **estaticos y serverless en Node/Python/Go**, pero **no ejecuta
-PHP**. Por eso el repositorio esta separado de forma que puedas:
+Vercel no tiene runtime PHP oficial, pero este proyecto usa el runtime comunitario
+[`vercel-php`](https://github.com/vercel-community/php) (PHP 8.3 con `pdo_pgsql` incluido),
+configurado en `vercel.json`.
 
-* Publicar el frontend (`public/`) como sitio estatico en Vercel, y
-* Hospedar `api/` en cualquier servicio con PHP + PostgreSQL (los endpoints ya estan
-  escritos como archivos autocontenidos tipo funcion serverless).
+1. **Importa el repo** en [vercel.com/new](https://vercel.com/new) → proyecto `gineco`.
+   * Framework Preset: **Other**
+   * Build Command: *(vacio)*
+   * Output Directory: **`public`**
+2. **Environment Variables** (Settings → Environment Variables):
 
-Si todo debe vivir en Vercel, habra que migrar `api/` a un runtime soportado (el esquema
-SQL y el frontend no cambian).
+   | Variable | Valor |
+   |----------|-------|
+   | `DB_HOST` | host de Neon (`ep-xxx.aws.neon.tech`) |
+   | `DB_PORT` | `5432` |
+   | `DB_NAME` | nombre de la BD en Neon |
+   | `DB_USER` | usuario de Neon |
+   | `DB_PASSWORD` | password de Neon |
+   | `DB_SSLMODE` | `require` |
+   | `UPLOAD_MODE` | `db` |
+   | `SESSION_DRIVER` | `db` |
+   | `APP_DEBUG` | `0` |
+   | `SESSION_NAME` | `gineco_session` |
 
-Para probar el frontend en Vercel:
+3. Pulsa **Deploy**. La URL queda en `https://TU-PROYECTO.vercel.app`.
+4. Entra con las cuentas demo y cambia sus contrasenas desde **Mi perfil**.
 
-1. Repo en GitHub con esta estructura.
-2. Nuevo proyecto -> Framework: **Other**, **Output Directory:** `public`.
-3. Configura las variables de entorno si usas funciones en otro servicio.
+Detalles importantes del despliegue en Vercel:
+
+* **`UPLOAD_MODE=db` es obligatorio**: el disco de las funciones es de solo lectura, por
+  eso las ecografias van a la tabla `imagenes_ecografias` (BYTEA) y el logo medico se
+  guarda embebido (data-URL) en `medicos.logo`.
+* **`SESSION_DRIVER=db`**: las sesiones se guardan en la tabla `sesiones`, asi sobreviven
+  a los reinicios y a las distintas instancias serverless.
+* El plan Hobby admite **maximo 12 funciones** por despliegue: este proyecto usa **10**
+  (los endpoints de `api/`). Si agregas endpoints nuevos, subelos a un plan de pago o
+  agrupalos.
+* Si cambias `db/schema.sql`, vuelve a ejecutar `php db/migrar.php` contra Neon.
+
+### 6.4 Alternativa: hosting PHP clasico
+
+Cualquier hosting con PHP 8.1+ y PostgreSQL funciona igual (XAMPP, cPanel, Railway, Render):
+
+1. Sube todos los archivos; DocumentRoot o subcarpeta publica = `public/`.
+2. Crea `.env` con los datos de Neon (`DB_SSLMODE=require`) y ejecuta `php db/migrar.php`.
+3. Con `UPLOAD_MODE=files` las imagenes se guardan en `public/uploads/` (debe ser
+   escribible) y las sesiones pueden ir a ficheros (`SESSION_DRIVER=file`).
 
 ---
 
@@ -202,6 +235,9 @@ Para probar el frontend en Vercel:
 | Imagenes no se guardan | Permisos de escritura en `public/uploads/` o cambia a `UPLOAD_MODE=db` |
 | Estilos/logos no cargan en produccion | Verifica `APP_URL` y que el frontend apunte a `/public` |
 | Errores 401 al recargar | Las sesiones usan cookies; habilita cookies en el navegador |
+| elation "sesiones" does not exist | Ejecuta `php db/migrar.php` contra la BD configurada |
+| En Vercel dice que el disco es de solo lectura | Usa `UPLOAD_MODE=db` y `SESSION_DRIVER=db` |
+| No more than 12 functions en Vercel Hobby | Agrupa endpoints o sube de plan (hay 10 funciones) |
 
 ---
 

@@ -7,7 +7,7 @@
  * DELETE ?id=  desactivar medico (superadmin)
  */
 
-require __DIR__ . '/_lib/init.php';
+require __DIR__ . '/../lib/init.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 $user = require_user();
@@ -18,7 +18,7 @@ if ($method === 'OPTIONS') {
     exit;
 }
 
-/** Guarda el logo (dataURL base64) y devuelve la ruta relativa. */
+/** Guarda el logo y devuelve la ruta relativa o el data-URL (UPLOAD_MODE=db). */
 function guardar_logo(string $dataUrl, int $medicoId): string
 {
     if (!preg_match('#^data:image/(png|jpe?g|webp|svg\+xml);base64,#i', $dataUrl, $m)) {
@@ -28,6 +28,12 @@ function guardar_logo(string $dataUrl, int $medicoId): string
     if ($binario === false || strlen($binario) > 3 * 1024 * 1024) {
         fail('Logo invalido o demasiado grande (max 3 MB)');
     }
+
+    // En modo base de datos (Vercel/serverless) el logo se guarda tal cual.
+    if (env('UPLOAD_MODE', 'files') === 'db') {
+        return $dataUrl;
+    }
+
     $ext = strtolower($m[1]);
     $ext = $ext === 'jpeg' ? 'jpg' : ($ext === 'svg+xml' ? 'svg' : $ext);
     $rel = 'uploads/logos/logo_' . $medicoId . '_' . bin2hex(random_bytes(4)) . '.' . $ext;
@@ -40,6 +46,18 @@ function guardar_logo(string $dataUrl, int $medicoId): string
     }
     @chmod($destino, 0644);
     return $rel;
+}
+
+/** Borra un logo almacenado como fichero (ignora los data-URL). */
+function borrar_logo_fichero(?string $ruta): void
+{
+    if (!$ruta || !str_starts_with($ruta, 'uploads/')) {
+        return;
+    }
+    $fichero = APP_ROOT . '/public/' . ltrim($ruta, '/');
+    if (is_file($fichero)) {
+        @unlink($fichero);
+    }
 }
 
 /* ------------------------------- GET ------------------------------- */
@@ -184,19 +202,11 @@ if ($method === 'PUT') {
         $anterior = $m['logo'];
         $datos['logo'] = $ruta;
         if ($anterior && $anterior !== $ruta) {
-            $viejo = APP_ROOT . '/public/' . ltrim($anterior, '/');
-            if (is_file($viejo)) {
-                @unlink($viejo);
-            }
+            borrar_logo_fichero($anterior);
         }
     }
     if (!empty($in['quitar_logo'])) {
-        if (!empty($m['logo'])) {
-            $viejo = APP_ROOT . '/public/' . ltrim($m['logo'], '/');
-            if (is_file($viejo)) {
-                @unlink($viejo);
-            }
-        }
+        borrar_logo_fichero($m['logo'] ?? null);
         $datos['logo'] = null;
     }
 

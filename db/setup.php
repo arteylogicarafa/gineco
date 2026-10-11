@@ -16,7 +16,7 @@ if (PHP_SAPI !== 'cli') {
     exit(1);
 }
 
-require __DIR__ . '/../api/_lib/init.php';
+require __DIR__ . '/../lib/init.php';
 
 $conDemo = !in_array('--sin-demo', $argv, true);
 

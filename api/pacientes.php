@@ -7,7 +7,7 @@
  * PUT    editar
  * DELETE ?id=  eliminar
  */
-require __DIR__ . '/_lib/init.php';
+require __DIR__ . '/../lib/init.php';
 
 $medico = require_medico();
 $mid = (int) $medico['id'];

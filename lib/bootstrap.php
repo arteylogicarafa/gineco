@@ -6,8 +6,7 @@
 
 declare(strict_types=1);
 
-define('APP_ROOT', dirname(__DIR__, 2));
-define('API_ROOT', dirname(__DIR__));
+define('APP_ROOT', dirname(__DIR__));
 
 /* ------------------------------------------------------------------
  * Carga de variables de entorno (.env o variables del servidor)
@@ -125,7 +124,68 @@ function method(string ...$esperados): void
 
 /* ------------------------------------------------------------------
  * Sesion (cookie httpOnly + SameSite)
+ *
+ * Por defecto la sesion se guarda en PostgreSQL (tabla `sesiones`) para
+ * que funcione en entornos serverless como Vercel, donde el disco es de
+ * solo lectura y cada invocacion puede caer en una instancia distinta.
+ * SESSION_DRIVER=file vuelve al almacenamiento en ficheros (XAMPP/clasico).
  * ------------------------------------------------------------------ */
+final class SesionEnBD implements SessionHandlerInterface
+{
+    public function open(string $path, string $name): bool
+    {
+        return true;
+    }
+
+    public function close(): bool
+    {
+        return true;
+    }
+
+    public function read(string $id): string
+    {
+        try {
+            $fila = db_row('SELECT datos FROM sesiones WHERE id = ? AND expira > now()', [$id]);
+            return $fila ? (string) $fila['datos'] : '';
+        } catch (Throwable $e) {
+            return '';
+        }
+    }
+
+    public function write(string $id, string $datos): bool
+    {
+        try {
+            db_run(
+                "INSERT INTO sesiones (id, datos, expira) VALUES (?, ?, now() + interval '24 hours')
+                 ON CONFLICT (id) DO UPDATE SET datos = EXCLUDED.datos, expira = EXCLUDED.expira",
+                [$id, $datos]
+            );
+            return true;
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    public function destroy(string $id): bool
+    {
+        try {
+            db_exec('DELETE FROM sesiones WHERE id = ?', [$id]);
+        } catch (Throwable $e) {
+            // ignorar: la sesion caducara igualmente
+        }
+        return true;
+    }
+
+    public function gc(int $max_lifetime): int|false
+    {
+        try {
+            return db_exec('DELETE FROM sesiones WHERE expira < now()');
+        } catch (Throwable $e) {
+            return 0;
+        }
+    }
+}
+
 function session_boot(): void
 {
     if (session_status() === PHP_SESSION_ACTIVE) {
@@ -142,6 +202,11 @@ function session_boot(): void
     ];
     session_name(env('SESSION_NAME', 'gineco_session'));
     session_set_cookie_params($params);
+
+    if (env('SESSION_DRIVER', 'db') === 'db') {
+        session_set_save_handler(new SesionEnBD(), true);
+    }
+
     session_start();
 }
 

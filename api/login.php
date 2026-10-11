@@ -1,6 +1,6 @@
 <?php
 /** POST /api/login  {usuario, password} */
-require __DIR__ . '/_lib/init.php';
+require __DIR__ . '/../lib/init.php';
 
 method('POST', 'OPTIONS');
 
