@@ -19,6 +19,7 @@ if (PHP_SAPI !== 'cli') {
 require __DIR__ . '/../lib/init.php';
 
 $conDemo = !in_array('--sin-demo', $argv, true);
+$cargarDemo = in_array('--cargar-demo', $argv, true);
 
 function paso(string $txt): void
 {
@@ -84,9 +85,13 @@ function d(string $offset): string
 }
 
 $existeDatos = (int) db_scalar('SELECT COUNT(*) FROM usuarios');
-if ($existeDatos > 0) {
+if ($existeDatos > 0 && !$cargarDemo) {
     echo "Ya existen usuarios en la base; se omiten los datos de demostracion.\n";
     echo "Listo.\n";
+    exit(0);
+}
+if ($cargarDemo && db_row("SELECT id FROM pacientes WHERE nombre = 'María Elena Suárez'")) {
+    echo "Los datos de demostracion ya estan cargados; no se duplican.\n";
     exit(0);
 }
 
@@ -344,6 +349,73 @@ foreach ($citasDemo as [$med, $pac, $fecha, $hora, $motivo, $estado]) {
     ]);
 }
 paso(count($citasDemo) . ' citas de demostracion');
+
+/* --- imagenes de demostracion (ecografias sinteticas, sin datos reales) --- */
+function imagen_demo(string $etiqueta): string
+{
+    $img = imagecreatetruecolor(640, 480);
+    $fondo = imagecolorallocate($img, 14, 14, 16);
+    imagefilledrectangle($img, 0, 0, 639, 479, $fondo);
+
+    // sector tipo ecografia
+    $gris = imagecolorallocate($img, 92, 96, 104);
+    imagefilledellipse($img, 320, 240, 380, 300, imagecolorallocate($img, 44, 46, 52));
+    imagefilledellipse($img, 320, 250, 240, 180, $gris);
+    imagefilledellipse($img, 360, 210, 120, 90, imagecolorallocate($img, 140, 144, 152));
+    imagefilledellipse($img, 275, 285, 70, 55, imagecolorallocate($img, 20, 20, 24));
+
+    // grano
+    for ($i = 0; $i < 2600; $i++) {
+        $x = mt_rand(140, 500);
+        $y = mt_rand(110, 370);
+        imagesetpixel($img, $x, $y, imagecolorallocate($img, mt_rand(70, 190), mt_rand(70, 190), mt_rand(70, 190)));
+    }
+
+    $blanco = imagecolorallocate($img, 240, 240, 244);
+    imagestring($img, 5, 18, 18, $etiqueta, $blanco);
+    imagestring($img, 3, 18, 448, 'IMAGEN DE DEMOSTRACION - NO ES UN ESTUDIO REAL', imagecolorallocate($img, 160, 164, 172));
+
+    ob_start();
+    imagepng($img);
+    imagedestroy($img);
+    return (string) ob_get_clean();
+}
+
+function insertar_imagen_demo(int $medicoId, int $pacienteId, ?int $consultaId, string $titulo, string $etiqueta): void
+{
+    $png = imagen_demo($etiqueta);
+    $archivo = null;
+    $contenido = null;
+
+    if (env('UPLOAD_MODE', 'files') === 'db') {
+        $contenido = '\x' . bin2hex($png);
+    } else {
+        $rel = 'uploads/imagenes/' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.png';
+        $destino = APP_ROOT . '/public/' . $rel;
+        if (!is_dir(dirname($destino))) {
+            mkdir(dirname($destino), 0775, true);
+        }
+        file_put_contents($destino, $png);
+        $archivo = $rel;
+    }
+
+    db_insert('imagenes_ecografias', [
+        'medico_id'   => $medicoId,
+        'paciente_id' => $pacienteId,
+        'consulta_id' => $consultaId,
+        'archivo'     => $archivo,
+        'mime'        => 'image/png',
+        'contenido'   => $contenido,
+        'tipo'        => 'Ecografia obstetrica',
+        'fecha'       => date('Y-m-d'),
+        'titulo'      => $titulo,
+        'observaciones' => 'Imagen sintetica de demostracion',
+    ]);
+}
+
+insertar_imagen_demo($med1, $idsPacientes[0]['paciente'], $consultaId, 'Ecografia transvaginal', 'ECOGRAFIA TV - DEMO');
+insertar_imagen_demo($med1, $idsPacientes[0]['paciente'], $consultaId, 'Ultrasonido abdominal', 'ULTRASONIDO ABDOMINAL - DEMO');
+paso('2 imagenes de demostracion');
 
 echo "\nListo. Accede con:\n";
 echo "  Superadmin ..... admin / Admin123!\n";
